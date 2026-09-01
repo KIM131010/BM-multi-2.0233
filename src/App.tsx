@@ -69,8 +69,11 @@ import { RestApiView } from './components/RestApiView';
 import { SecurityGdprBackupView } from './components/SecurityGdprBackupView';
 
 export default function App() {
-  // Global State
-  const [currentUser, setUser] = useState<User | null>(getCurrentUser() || DEFAULT_ADMIN);
+  // Global State: Default to null (logged out) so opening the app displays the login portal
+  const [currentUser, setUser] = useState<User | null>(() => {
+    // Clear any previous auto-login session on fresh start so user always lands on Login
+    return null;
+  });
   const [theme, setThemeState] = useState<'dark' | 'light'>(getTheme());
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
 
@@ -85,8 +88,8 @@ export default function App() {
   const [webhooks, setWebhooks] = useState<WebhookSubscription[]>(loadWebhooks());
   const [firebaseStatus, setFirebaseStatus] = useState<'connecting' | 'connected' | 'offline'>('connecting');
 
-  // UI Modals
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  // UI Modals: Start with AuthModal open if currentUser is null
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(true);
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -362,6 +365,7 @@ export default function App() {
         onOpenAlerts={() => setActiveTab('alerts')}
         onLogout={handleLogout}
         onOpenMfaModal={() => setActiveTab('security')}
+        onOpenLogin={() => setIsAuthModalOpen(true)}
       />
 
       {/* Main Layout Body */}

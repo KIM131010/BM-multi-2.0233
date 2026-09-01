@@ -28,6 +28,7 @@ interface NavbarProps {
   onOpenAlerts: () => void;
   onLogout: () => void;
   onOpenMfaModal: () => void;
+  onOpenLogin?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -40,7 +41,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenSearch,
   onOpenAlerts,
   onLogout,
-  onOpenMfaModal
+  onOpenMfaModal,
+  onOpenLogin
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showAlertPreview, setShowAlertPreview] = useState(false);
@@ -168,8 +170,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </button>
 
-          {/* Current User Profile Dropdown */}
-          {currentUser && (
+          {/* Current User Profile Dropdown or Sign In */}
+          {currentUser ? (
             <div className="relative">
               <button
                 id="nav-user-menu-btn"
@@ -259,6 +261,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               )}
             </div>
+          ) : (
+            <button
+              id="nav-login-btn"
+              onClick={onOpenLogin}
+              className="px-3.5 py-2 rounded-xl gold-btn text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow-md"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Log In</span>
+            </button>
           )}
 
         </div>

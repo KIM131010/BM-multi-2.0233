@@ -299,7 +299,9 @@ export function saveGdpr(items: GDPRConsent[]): void {
 
 export function getCurrentUser(): User | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+    // Clean up any legacy localStorage session to ensure strict session logout on close
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    const raw = sessionStorage.getItem(STORAGE_KEYS.CURRENT_USER);
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -307,10 +309,16 @@ export function getCurrentUser(): User | null {
 }
 
 export function setCurrentUser(user: User | null): void {
-  if (user) {
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
-  } else {
+  try {
+    // Clear localStorage to prevent persistent cross-session logins
     localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    if (user) {
+      sessionStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+    } else {
+      sessionStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    }
+  } catch {
+    // Fallback if storage unavailable
   }
 }
 
